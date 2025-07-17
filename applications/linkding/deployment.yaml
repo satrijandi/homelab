@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: linkding
+  namespace: linkding
+  labels:
+    app.kubernetes.io/name: linkding
+    app.kubernetes.io/instance: linkding
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: linkding
+      app.kubernetes.io/instance: linkding
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: linkding
+        app.kubernetes.io/instance: linkding
+    spec:
+      containers:
+      - name: linkding
+        image: sissbruecker/linkding:latest
+        ports:
+        - containerPort: 9090
+          name: http
+        env:
+        - name: LD_SUPERUSER_NAME
+          value: "admin"
+        - name: LD_SUPERUSER_PASSWORD
+          value: "changeme"
+        - name: LD_DB_ENGINE
+          value: "django.db.backends.sqlite3"
+        - name: LD_DB_DATABASE
+          value: "/etc/linkding/data/db.sqlite3"
+        volumeMounts:
+        - name: linkding-data
+          mountPath: /etc/linkding/data
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /
+            port: http
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /
+            port: http
+          initialDelaySeconds: 5
+          periodSeconds: 5
+      volumes:
+      - name: linkding-data
+        persistentVolumeClaim:
+          claimName: linkding-data

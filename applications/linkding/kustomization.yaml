@@ -1,0 +1,25 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+metadata:
+  name: linkding
+
+resources:
+  - namespace.yaml
+  - deployment.yaml
+  - service.yaml
+  - pvc.yaml
+  - ingress.yaml
+
+images:
+  - name: sissbruecker/linkding
+    newTag: latest
+
+commonLabels:
+  app.kubernetes.io/name: linkding
+  app.kubernetes.io/instance: linkding
+  app.kubernetes.io/version: "1.36.0"
+  app.kubernetes.io/component: bookmark-manager
+  app.kubernetes.io/part-of: homelab
+
+namespace: linkding
