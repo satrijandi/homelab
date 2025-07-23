@@ -1,0 +1,48 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: linkding-init-db
+  namespace: linkding
+  labels:
+    app: linkding-init-db
+spec:
+  template:
+    metadata:
+      labels:
+        app: linkding-init-db
+    spec:
+      restartPolicy: OnFailure
+      containers:
+      - name: init-db
+        image: sissbruecker/linkding:1.41.0
+        command: ["python", "manage.py", "migrate"]
+        env:
+        - name: LD_DB_ENGINE
+          value: "postgres"
+        - name: LD_DB_HOST
+          value: "postgres-cluster-rw.database.svc.cluster.local"
+        - name: LD_DB_PORT
+          value: "5432"
+        - name: LD_DB_DATABASE
+          valueFrom:
+            secretKeyRef:
+              name: postgres-app-credentials
+              key: database
+        - name: LD_DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: postgres-app-credentials
+              key: username
+        - name: LD_DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgres-app-credentials
+              key: password
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
+  backoffLimit: 3

@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pgadmin
+  namespace: pgadmin
+spec:
+  template:
+    spec:
+      containers:
+      - name: pgadmin
+        env:
+        - name: PGADMIN_CONFIG_CONSOLE_LOG_LEVEL
+          value: "DEBUG"
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "250m"

@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: pgadmin-pgpass
+  namespace: pgadmin
+type: Opaque
+stringData:
+  pgpass: "postgres-cluster-rw.database.svc.cluster.local:5432:linkding:linkding:linkding-secure-password"
