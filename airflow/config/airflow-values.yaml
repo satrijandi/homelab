@@ -1,0 +1,175 @@
+# Airflow Helm Chart Configuration for CloudNative-PG Database
+# Based on Apache Airflow 3.0.2
+
+# Airflow version
+airflowVersion: "3.0.2"
+
+# Default airflow repository
+defaultAirflowRepository: apache/airflow
+
+# Default airflow tag
+defaultAirflowTag: "3.0.2"
+
+# Images
+images:
+  airflow:
+    repository: apache/airflow
+    tag: "3.0.2"
+    pullPolicy: IfNotPresent
+
+# PostgreSQL configuration
+postgresql:
+  enabled: false  # Disable internal PostgreSQL
+
+# External database configuration (CloudNative-PG)
+data:
+  metadataConnection:
+    user: app
+    pass: s2QCIJrGn7vcQQkmXosbP0VivWUS20J7idTbqfyt2NNdRaxNdqLSN6W82fxxZLQa
+    protocol: postgresql
+    host: cluster-with-metrics-rw.default.svc.cluster.local
+    port: 5432
+    db: airflow
+    sslmode: disable
+
+# Redis configuration (for CeleryExecutor if needed)
+redis:
+  enabled: true
+
+# Webserver configuration
+webserver:
+  replicas: 1
+  service:
+    type: ClusterIP
+
+# Scheduler configuration  
+scheduler:
+  replicas: 1
+
+# Worker configuration (for CeleryExecutor)
+workers:
+  replicas: 1
+
+# Executor configuration
+executor: CeleryExecutor
+
+# Flower configuration (Celery monitoring)
+flower:
+  enabled: true
+
+# Triggerer configuration (for deferrable operators)
+triggerer:
+  enabled: true
+  replicas: 1
+
+# StatsD configuration
+statsd:
+  enabled: false
+
+# PgBouncer configuration
+pgbouncer:
+  enabled: true
+  maxClientConn: 100
+  metadataPoolSize: 10
+  resultBackendPoolSize: 5
+
+# Logs configuration
+logs:
+  persistence:
+    enabled: false
+
+# DAGs configuration
+dags:
+  persistence:
+    enabled: false
+
+# Default user configuration
+webserverSecretKey: "airflow-secret-key-change-in-production"
+
+# Create admin user
+createUserJob:
+  useHelmHooks: false
+  applyCustomEnv: false
+
+# Database migration job
+migrateDatabaseJob:
+  useHelmHooks: false
+  applyCustomEnv: false
+
+# Environment variables
+env:
+  - name: AIRFLOW__CORE__LOAD_EXAMPLES
+    value: "False"
+  - name: AIRFLOW__WEBSERVER__EXPOSE_CONFIG
+    value: "True"
+  - name: AIRFLOW__WEBSERVER__RBAC
+    value: "True"
+  - name: AIRFLOW__API_AUTH__JWT_SECRET
+    value: "my-jwt-secret"
+
+# DAGs Configuration - GitOps ready
+dags:
+  persistence:
+    enabled: false
+  gitSync:
+    enabled: false
+
+# Extra volumes for mounting DAGs from ConfigMaps
+extraConfigMaps:
+  - name: airflow-dags
+    mountPath: /opt/airflow/dags
+
+# Volume mounts for all components
+scheduler:
+  extraVolumes:
+    - name: dag-volume
+      configMap:
+        name: airflow-dags
+  extraVolumeMounts:
+    - name: dag-volume
+      mountPath: /opt/airflow/dags
+      readOnly: true
+
+workers:
+  extraVolumes:
+    - name: dag-volume
+      configMap:
+        name: airflow-dags
+  extraVolumeMounts:
+    - name: dag-volume
+      mountPath: /opt/airflow/dags
+      readOnly: true
+
+dagProcessor:
+  extraVolumes:
+    - name: dag-volume
+      configMap:
+        name: airflow-dags
+  extraVolumeMounts:
+    - name: dag-volume
+      mountPath: /opt/airflow/dags
+      readOnly: true
+
+# Resource limits
+resources:
+  limits:
+    cpu: 1000m
+    memory: 1Gi
+  requests:
+    cpu: 500m
+    memory: 512Mi
+
+# Security context
+securityContext:
+  runAsUser: 50000
+  runAsGroup: 0
+  fsGroup: 0
+
+# Service account
+serviceAccount:
+  create: true
+  name: ""
+
+# RBAC
+rbac:
+  create: true

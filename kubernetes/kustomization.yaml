@@ -1,0 +1,28 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+metadata:
+  name: airflow-gitops
+  namespace: airflow
+
+resources:
+  - airflow-gitops.yaml
+
+commonLabels:
+  app.kubernetes.io/name: airflow
+  app.kubernetes.io/component: dags
+  app.kubernetes.io/managed-by: kustomize
+
+# ConfigMap generator for automatic updates
+configMapGenerator:
+  - name: airflow-dags
+    files:
+      - airflow/first_dag.py
+    options:
+      labels:
+        app: airflow
+        component: dags
+
+# Generate suffix to trigger rolling updates when DAGs change
+generatorOptions:
+  disableNameSuffixHash: false
