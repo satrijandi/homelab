@@ -1,0 +1,8 @@
+{
+  "sharded": false,
+  "tables": {
+    "product": {},
+    "customer": {},
+    "corder": {}
+  }
+}
