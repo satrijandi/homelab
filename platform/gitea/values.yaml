@@ -5,7 +5,7 @@ gitea:
     annotations:
       cert-manager.io/cluster-issuer: letsencrypt-prod
     hosts:
-      - host: &host git.homelab.local
+      - host: &host git.127-0-0-1.nip.io
         paths:
           - path: /
             pathType: Prefix
@@ -19,23 +19,15 @@ gitea:
     config:
       server:
         LANDING_PAGE: explore
-        ROOT_URL: https://git.homelab.local
+        ROOT_URL: https://git.127-0-0-1.nip.io
         OFFLINE_MODE: true
       repository:
         DISABLED_REPO_UNITS: repo.wiki,repo.projects,repo.packages
         DISABLE_STARS: true
-        DEFAULT_BRANCH: main
+        DEFAULT_BRANCH: master
       service.explore:
         DISABLE_USERS_PAGE: true
       actions:
         ENABLED: false
       webhook:
         ALLOWED_HOST_LIST: private
-  postgresql-ha:
-    enabled: false
-  postgresql:
-    enabled: true
-  redis-cluster:
-    enabled: false
-  redis:
-    enabled: false

@@ -4,11 +4,21 @@ organizations:
     teams:
       - name: Owners
         members:
-          - admin
+          - renovate
 repositories:
   - name: homelab
     owner: ops
     private: false
     migrate:
-      source: https://github.com/satrijandi/homelab
+      source: https://github.com/khuedoan/homelab
       mirror: false
+  - name: blog
+    owner: khuedoan
+    migrate:
+      source: https://github.com/khuedoan/blog
+      mirror: true
+  - name: backstage
+    owner: khuedoan
+    migrate:
+      source: https://github.com/khuedoan/backstage
+      mirror: true

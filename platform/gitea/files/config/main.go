@@ -1,123 +1,90 @@
 package main
 
 import (
-	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
-	"time"
 
 	"code.gitea.io/sdk/gitea"
 	"gopkg.in/yaml.v2"
 )
 
-type Config struct {
-	Organizations []Organization `yaml:"organizations"`
-	Repositories  []Repository   `yaml:"repositories"`
-}
-
 type Organization struct {
-	Name        string `yaml:"name"`
-	Description string `yaml:"description"`
-	Teams       []Team `yaml:"teams"`
-}
-
-type Team struct {
-	Name    string   `yaml:"name"`
-	Members []string `yaml:"members"`
+	Name        string
+	Description string
 }
 
 type Repository struct {
-	Name    string  `yaml:"name"`
-	Owner   string  `yaml:"owner"`
-	Private bool    `yaml:"private"`
-	Migrate Migrate `yaml:"migrate"`
+	Name    string
+	Owner   string
+	Private bool
+	Migrate struct {
+		Source string
+		Mirror bool
+	}
 }
 
-type Migrate struct {
-	Source string `yaml:"source"`
-	Mirror bool   `yaml:"mirror"`
+type Config struct {
+	Organizations []Organization
+	Repositories  []Repository
 }
 
 func main() {
-	giteaURL := os.Getenv("GITEA_URL")
-	if giteaURL == "" {
-		giteaURL = "http://gitea-http:3000"
+	data, err := os.ReadFile("./config.yaml")
+
+	if err != nil {
+		log.Fatalf("Unable to read config file: %v", err)
 	}
 
-	adminUser := os.Getenv("GITEA_ADMIN_USERNAME")
-	if adminUser == "" {
-		adminUser = "admin"
+	config := Config{}
+
+	err = yaml.Unmarshal([]byte(data), &config)
+
+	if err != nil {
+		log.Fatalf("error: %v", err)
 	}
 
-	adminPassword := os.Getenv("GITEA_ADMIN_PASSWORD")
-	if adminPassword == "" {
-		log.Fatal("GITEA_ADMIN_PASSWORD environment variable is required")
-	}
+	gitea_host := os.Getenv("GITEA_HOST")
+	gitea_user := os.Getenv("GITEA_USER")
+	gitea_password := os.Getenv("GITEA_PASSWORD")
 
-	// Wait for Gitea to be ready
-	client, err := gitea.NewClient(giteaURL, gitea.SetBasicAuth(adminUser, adminPassword))
+	options := (gitea.SetBasicAuth(gitea_user, gitea_password))
+	client, err := gitea.NewClient(gitea_host, options)
+
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	// Wait for Gitea to be available
-	for i := 0; i < 60; i++ {
-		_, _, err := client.GetMyUserInfo()
-		if err == nil {
-			break
-		}
-		log.Printf("Waiting for Gitea to be ready... (%d/60)", i+1)
-		time.Sleep(5 * time.Second)
-	}
-
-	// Read configuration
-	configData, err := ioutil.ReadFile("/config/config.yaml")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	var config Config
-	err = yaml.Unmarshal(configData, &config)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// Create organizations
 	for _, org := range config.Organizations {
-		_, _, err := client.CreateOrg(gitea.CreateOrgOption{
+		_, _, err = client.CreateOrg(gitea.CreateOrgOption{
 			Name:        org.Name,
 			Description: org.Description,
 		})
+
 		if err != nil {
-			log.Printf("Organization %s may already exist: %v", org.Name, err)
-		} else {
-			log.Printf("Created organization: %s", org.Name)
+			log.Printf("Create organization %s: %v", org.Name, err)
 		}
 	}
 
-	// Migrate repositories
 	for _, repo := range config.Repositories {
-		existing, _, _ := client.GetRepo(repo.Owner, repo.Name)
-		if existing != nil {
-			log.Printf("Repository %s/%s already exists, skipping migration", repo.Owner, repo.Name)
-			continue
-		}
+		if repo.Migrate.Source != "" {
+			_, _, err = client.MigrateRepo(gitea.MigrateRepoOption{
+				RepoName:       repo.Name,
+				RepoOwner:      repo.Owner,
+				CloneAddr:      repo.Migrate.Source,
+				Service:        gitea.GitServicePlain,
+				Mirror:         repo.Migrate.Mirror,
+				Private:        repo.Private,
+				MirrorInterval: "10m",
+			})
 
-		_, _, err := client.MigrateRepo(gitea.MigrateRepoOption{
-			RepoName:    repo.Name,
-			RepoOwner:   repo.Owner,
-			CloneAddr:   repo.Migrate.Source,
-			Mirror:      repo.Migrate.Mirror,
-			Private:     repo.Private,
-			Description: fmt.Sprintf("Migrated from %s", repo.Migrate.Source),
-		})
-		if err != nil {
-			log.Printf("Failed to migrate repository %s: %v", repo.Name, err)
+			if err != nil {
+				log.Printf("Migrate %s/%s: %v", repo.Owner, repo.Name, err)
+			}
 		} else {
-			log.Printf("Migrated repository: %s/%s", repo.Owner, repo.Name)
+			_, _, err = client.AdminCreateRepo(repo.Owner, gitea.CreateRepoOption{
+				Name: repo.Name,
+				Private: repo.Private,
+			})
 		}
 	}
-
-	log.Println("Gitea configuration completed")
 }
