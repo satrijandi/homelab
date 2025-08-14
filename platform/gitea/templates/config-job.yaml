@@ -19,7 +19,7 @@ spec:
         - -c
         - |
           cd /app
-          go mod tidy
+          go get .
           go run .
         env:
         - name: GITEA_URL
