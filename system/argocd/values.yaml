@@ -16,7 +16,10 @@ argo-cd:
       ingressClassName: nginx
       annotations:
         cert-manager.io/cluster-issuer: letsencrypt-prod
-      tls: true
+      tls:
+        - secretName: argocd-tls
+          hosts:
+            - argocd.homelab.local
     metrics: &metrics
       enabled: true
       serviceMonitor:
@@ -32,12 +35,12 @@ argo-cd:
 
 argocd-apps:
   applicationsets:
-    root:
+    - name: root
       namespace: argocd
       generators:
         - git:
-            repoURL: &repoURL http://gitea-http.gitea:3000/ops/homelab
-            revision: &revision main
+            repoURL: http://gitea-http.gitea:3000/ops/homelab
+            revision: main
             directories:
               - path: system/*
               - path: platform/*
@@ -51,9 +54,9 @@ argocd-apps:
             namespace: '{{path.basename}}'
           project: default
           source:
-            repoURL: *repoURL
+            repoURL: http://gitea-http.gitea:3000/ops/homelab
             path: '{{path}}'
-            targetRevision: *revision
+            targetRevision: main
           syncPolicy:
             automated:
               prune: true

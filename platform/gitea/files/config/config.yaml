@@ -1,0 +1,14 @@
+organizations:
+  - name: ops
+    description: Operations
+    teams:
+      - name: Owners
+        members:
+          - admin
+repositories:
+  - name: homelab
+    owner: ops
+    private: false
+    migrate:
+      source: https://github.com/satrijandi/homelab
+      mirror: false
