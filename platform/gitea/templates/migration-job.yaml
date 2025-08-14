@@ -1,0 +1,121 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: gitea-migration-{{ include (print $.Template.BasePath "/config-source.yaml") . | sha256sum | trunc 7 }}
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+spec:
+  backoffLimit: 10
+  template:
+    spec:
+      restartPolicy: Never
+      serviceAccountName: gitea-migration
+      containers:
+        - name: migration
+          image: bitnami/git:2.41.0
+          env:
+            - name: GITEA_HOST
+              value: http://gitea-http:3000
+            - name: GITEA_USER
+              valueFrom:
+                secretKeyRef:
+                  name: gitea-admin-secret
+                  key: username
+            - name: GITEA_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: gitea-admin-secret
+                  key: password
+            - name: GITHUB_REPO
+              value: https://github.com/satrijandi/homelab
+            - name: GITEA_REPO_URL
+              value: http://gitea-http:3000/ops/homelab.git
+            - name: ARGOCD_SERVER
+              value: argocd-server:80
+          workingDir: /workspace
+          command:
+            - sh
+            - -c
+          args:
+            - |
+              set -e
+              
+              # Wait for Gitea to be ready
+              echo "Waiting for Gitea to be ready..."
+              until curl -s $GITEA_HOST/api/v1/version; do
+                echo "Waiting for Gitea API..."
+                sleep 5
+              done
+              
+              echo "Gitea is ready, starting migration..."
+              
+              # Clone the GitHub repository
+              git clone $GITHUB_REPO /tmp/homelab
+              cd /tmp/homelab
+              
+              # Configure git
+              git config user.name "ArgoCD Migration"
+              git config user.email "argocd@homelab.local"
+              
+              # Wait a bit more for the config job to complete
+              sleep 30
+              
+              # Add the Gitea remote and push
+              git remote add gitea $GITEA_REPO_URL
+              
+              # Try to push, retry if needed (repo might not exist yet)
+              for i in {1..10}; do
+                if git push gitea main; then
+                  echo "Successfully pushed to Gitea"
+                  break
+                else
+                  echo "Push failed, attempt $i/10, waiting..."
+                  sleep 10
+                fi
+              done
+              
+              # Install kubectl
+              curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+              chmod +x kubectl
+              mv kubectl /usr/local/bin/
+              
+              # Update ArgoCD application to use Gitea
+              echo "Updating ArgoCD application repository..."
+              kubectl patch application gitea -n argocd --type='json' -p='[
+                {
+                  "op": "replace",
+                  "path": "/spec/source/repoURL",
+                  "value": "http://gitea-http:3000/ops/homelab.git"
+                }
+              ]'
+              
+              echo "Migration completed successfully!"
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: gitea-migration
+  namespace: {{ .Release.Namespace }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: gitea-migration
+rules:
+- apiGroups: ["argoproj.io"]
+  resources: ["applications"]
+  verbs: ["get", "patch", "update"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: gitea-migration
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: gitea-migration
+subjects:
+- kind: ServiceAccount
+  name: gitea-migration
+  namespace: {{ .Release.Namespace }}
