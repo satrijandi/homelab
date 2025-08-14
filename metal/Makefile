@@ -6,8 +6,8 @@ default: cluster
 
 cluster:
 	@echo "Creating k3d cluster..."
-	k3d cluster create --config k3d-config.yaml
-	k3d kubeconfig get homelab > kubeconfig.yaml
+	k3d cluster create --config k3d-config.yaml || true
+	@if [ ! -f kubeconfig.yaml ]; then k3d kubeconfig get homelab > kubeconfig.yaml; fi
 	@echo "Cluster created successfully!"
 
 destroy:
