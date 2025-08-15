@@ -1,0 +1,50 @@
+# MinIO Configuration for Homelab
+minio:
+  # Authentication
+  auth:
+    rootUser: "admin"
+    rootPassword: "homelab123"
+
+  # Service configuration
+  service:
+    type: NodePort
+    nodePorts:
+      api: 30090
+      console: 30091
+
+  # Resource configuration
+  resources:
+    limits:
+      memory: 512Mi
+      cpu: 500m
+    requests:
+      memory: 256Mi
+      cpu: 100m
+
+  # Persistence
+  persistence:
+    enabled: true
+    size: 10Gi
+    storageClass: "local-path"
+
+  # Security context for k3d compatibility
+  containerSecurityContext:
+    enabled: false
+  podSecurityContext:
+    enabled: false
+
+  # Metrics and monitoring (optional)
+  metrics:
+    serviceMonitor:
+      enabled: false
+
+  # Configuration for development environment
+  defaultBuckets: "homelab-data"
+  
+  # Network policy
+  networkPolicy:
+    enabled: false
+
+  # Console configuration
+  web:
+    enabled: true
