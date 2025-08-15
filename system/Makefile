@@ -12,10 +12,18 @@ install:
 	kubectl wait --for=condition=available --timeout=300s deployment/argocd-server -n argocd
 	@echo "Applying bootstrap configuration..."
 	kubectl apply -f ../bootstrap.yaml
+	@echo "Deploying ApplicationSet for automatic app discovery..."
+	kubectl apply -f applicationset.yaml
+	@echo "Waiting for ApplicationSet to discover applications..."
+	sleep 10
+	@echo "Syncing discovered applications..."
+	kubectl patch application gitea -n argocd --type='merge' -p='{"operation":{"sync":{"revision":"main"}}}' || echo "Gitea app not ready yet"
+	kubectl patch application nginx -n argocd --type='merge' -p='{"operation":{"sync":{"revision":"main"}}}' || echo "Nginx app not ready yet"
 	@echo ""
-	@echo "🎉 ArgoCD is ready!"
+	@echo "🎉 ArgoCD and applications are ready!"
 	@echo "Access ArgoCD at: http://localhost:30080"
-	@echo "Get admin password: kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64 -d"
+	@echo "Access Gitea at: http://localhost:30300"
+	@echo "Get ArgoCD admin password: kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64 -d"
 
 bootstrap: install
 

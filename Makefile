@@ -5,7 +5,7 @@ metal:
 	make -C metal cluster
 
 system:
-	@echo "Installing system layer (ArgoCD)..."
+	@echo "Installing system layer (ArgoCD) and deploying applications..."
 	make -C system install
 
 platform:
@@ -29,10 +29,11 @@ help:
 	@echo "Homelab Data Platform Architecture"
 	@echo "=================================="
 	@echo "make metal   - Create k3d cluster"
-	@echo "make system  - Install ArgoCD (GitOps)"
+	@echo "make system  - Install ArgoCD and deploy all applications"
 	@echo "make status  - Check deployment status"
 	@echo "make clean   - Remove everything"
 	@echo ""
-	@echo "After 'make system', ArgoCD will automatically deploy:"
+	@echo "The 'make system' command will automatically deploy:"
+	@echo "  - ArgoCD (GitOps controller)"
 	@echo "  - Platform layer: Gitea (localhost:30300)"
 	@echo "  - Application layer: Nginx (localhost:30080)"
