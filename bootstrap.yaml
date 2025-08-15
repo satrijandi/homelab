@@ -12,7 +12,7 @@ spec:
   project: default
   source:
     path: system
-    repoURL: https://github.com/satrijandi/homelab.git
+    repoURL: http://gitea-http.gitea.svc.cluster.local:3000/ops/homelab.git
     targetRevision: main
     directory:
       include: applicationset.yaml

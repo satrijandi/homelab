@@ -6,7 +6,7 @@ metadata:
 spec:
   generators:
   - git:
-      repoURL: https://github.com/satrijandi/homelab.git
+      repoURL: http://gitea-http.gitea.svc.cluster.local:3000/ops/homelab.git
       revision: main
       directories:
       - path: platform/*
@@ -17,7 +17,7 @@ spec:
     spec:
       project: default
       source:
-        repoURL: https://github.com/satrijandi/homelab.git
+        repoURL: http://gitea-http.gitea.svc.cluster.local:3000/ops/homelab.git
         path: '{{path}}'
         targetRevision: main
       destination:

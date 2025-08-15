@@ -12,7 +12,7 @@ spec:
   project: default
   source:
     path: system
-    repoURL: ${GIT_REPO_URL:-https://github.com/satrijandi/homelab.git}
+    repoURL: ${GIT_REPO_URL}
     targetRevision: main
     directory:
       include: applicationset.yaml

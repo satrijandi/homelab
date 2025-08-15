@@ -34,10 +34,9 @@ setup-repos:
 
 switch-to-gitea:
 	@echo "Switching ArgoCD to use Gitea repository..."
-	@if [[ "$$(./scripts/setup-git-repos.sh check-repo)" == "exists" ]]; then \
+	@if [ "$$(./scripts/setup-git-repos.sh check-repo)" = "exists" ]; then \
 		echo "Gitea repository exists, updating ArgoCD configuration..."; \
-		GIT_REPO_URL="http://gitea-http.gitea.svc.cluster.local:3000/ops/homelab.git"; \
-		export GIT_REPO_URL; \
+		export GIT_REPO_URL="http://gitea-http.gitea.svc.cluster.local:3000/ops/homelab.git"; \
 		envsubst < bootstrap.yaml.template > bootstrap.yaml; \
 		envsubst < system/applicationset.yaml.template > system/applicationset.yaml; \
 		kubectl apply -f bootstrap.yaml; \
