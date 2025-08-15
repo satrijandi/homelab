@@ -8,6 +8,7 @@ This homelab implements a **3-layer architecture**:
 
 ### System Layer
 - **ArgoCD**: GitOps controller for automated deployments
+- **MinIO**: S3-compatible object storage for data persistence
 - **k3d**: Lightweight Kubernetes cluster for development
 
 ### Platform Layer  
@@ -57,6 +58,12 @@ After running `make system`, access your services:
 
 - **Nginx**: http://localhost:30081
   - Custom homelab dashboard
+
+- **MinIO**: 
+  - API: http://localhost:30090
+  - Console: http://localhost:30091
+  - Username: `admin`
+  - Password: `homelab123`
 
 ## 📁 Project Structure
 

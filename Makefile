@@ -64,4 +64,4 @@ help:
 	@echo "The 'make system' command will automatically:"
 	@echo "  - Use GitHub for initial install (if Gitea not available)"
 	@echo "  - Use Gitea for subsequent installs (if available)"
-	@echo "  - Deploy: ArgoCD, Gitea (localhost:30300), Nginx (localhost:30081)"
+	@echo "  - Deploy: ArgoCD, Gitea (localhost:30300), Nginx (localhost:30081), MinIO (localhost:30090/30091)"
