@@ -14,8 +14,8 @@ metal:
 	k3d kubeconfig merge homelab --kubeconfig-switch-context
 	@echo "Cluster is ready for use!"
 
-.PHONY: clean-metal
-clean-metal:
+.PHONY: clean
+clean:
 	@echo "Deleting k3d cluster..."
 	k3d cluster delete homelab || true
 	@echo "k3d cluster deleted!"
