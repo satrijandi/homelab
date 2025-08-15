@@ -1,35 +1,21 @@
-.POSIX:
-.PHONY: *
-.EXPORT_ALL_VARIABLES:
-
-KUBECONFIG = $(shell pwd)/metal/kubeconfig.yaml
-KUBE_CONFIG_PATH = $(KUBECONFIG)
-
-default: metal system post-install
-
+.PHONY: metal
 metal:
-	@echo "Setting up k3d cluster..."
-	make -C metal
+	@echo "Creating k3d cluster with latest stable Kubernetes..."
+	k3d cluster create homelab \
+		--image rancher/k3s:v1.31.0-k3s1 \
+		--port "80:80@loadbalancer" \
+		--port "443:443@loadbalancer" \
+		--port "6443:6443@server:0" \
+		--agents 2 \
+		--servers 1 \
+		--wait
+	@echo "k3d cluster 'homelab' created successfully!"
+	@echo "Updating kubeconfig..."
+	k3d kubeconfig merge homelab --kubeconfig-switch-context
+	@echo "Cluster is ready for use!"
 
-system:
-	@echo "Bootstrapping ArgoCD..."
-	make -C system bootstrap
-
-post-install:
-	@echo "Waiting for services to be ready..."
-	kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=argocd-server -n argocd --timeout=300s
-	@echo "Getting ArgoCD admin password..."
-	kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
-	@echo ""
-
-clean:
-	@echo "Cleaning up cluster..."
-	make -C metal destroy
-
-status:
-	@echo "Cluster status:"
-	make -C metal status
-	@echo "\nArgoCD status:"
-	kubectl get pods -n argocd 2>/dev/null || echo "ArgoCD not deployed yet"
-	@echo "\nGitea status:"
-	kubectl get pods -n gitea 2>/dev/null || echo "Gitea not deployed yet"
+.PHONY: clean-metal
+clean-metal:
+	@echo "Deleting k3d cluster..."
+	k3d cluster delete homelab || true
+	@echo "k3d cluster deleted!"
