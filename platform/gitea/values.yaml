@@ -1,0 +1,41 @@
+gitea:
+  service:
+    http:
+      type: NodePort
+      port: 3000
+      nodePort: 30300
+  
+  gitea:
+    admin:
+      username: admin
+      password: homelab123
+      email: admin@homelab.local
+    
+    config:
+      server:
+        LANDING_PAGE: explore
+        ROOT_URL: http://localhost:30300
+        OFFLINE_MODE: true
+      
+      repository:
+        DISABLED_REPO_UNITS: repo.wiki,repo.projects,repo.packages
+        DISABLE_STARS: true
+        DEFAULT_BRANCH: main
+      
+      service.explore:
+        DISABLE_USERS_PAGE: true
+      
+      actions:
+        ENABLED: false
+      
+      webhook:
+        ALLOWED_HOST_LIST: private
+  
+  persistence:
+    enabled: true
+    size: 2Gi
+  
+  postgresql:
+    enabled: true
+    persistence:
+      size: 1Gi

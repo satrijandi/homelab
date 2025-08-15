@@ -1,0 +1,42 @@
+argo-cd:
+  global:
+    domain: argocd.homelab.local
+  
+  configs:
+    params:
+      server.insecure: true
+      controller.diff.server.side: true
+    
+    cm:
+      resource.ignoreResourceUpdatesEnabled: true
+      resource.customizations.ignoreResourceUpdates.all: |
+        jsonPointers:
+          - /status
+      repositories: |
+        - url: https://github.com/satrijandi/homelab.git
+          type: git
+          name: homelab
+
+  server:
+    service:
+      type: NodePort
+      nodePort: 30080
+    metrics: &metrics
+      enabled: false
+      serviceMonitor:
+        enabled: false
+  
+  controller:
+    metrics: *metrics
+  
+  repoServer:
+    metrics: *metrics
+  
+  redis:
+    metrics: *metrics
+  
+  dex:
+    enabled: false
+
+argocd-apps:
+  enabled: false

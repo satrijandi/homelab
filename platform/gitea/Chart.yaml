@@ -1,0 +1,9 @@
+apiVersion: v2
+name: gitea
+description: Gitea Git repository management platform
+type: application
+version: 0.1.0
+dependencies:
+  - name: gitea
+    version: 12.1.3
+    repository: https://dl.gitea.io/charts/
