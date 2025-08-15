@@ -1,4 +1,4 @@
-.PHONY: metal system platform apps clean help
+.PHONY: metal system platform apps clean help setup-repos switch-to-gitea
 
 metal:
 	@echo "Setting up k3d cluster..."
@@ -6,6 +6,10 @@ metal:
 
 system:
 	@echo "Installing system layer (ArgoCD) and deploying applications..."
+	@echo "Determining Git repository source..."
+	@REPO_URL=$$(./scripts/setup-git-repos.sh get-repo-url); \
+	echo "Using repository: $$REPO_URL"; \
+	export GIT_REPO_URL="$$REPO_URL"; \
 	make -C system install
 
 platform:
@@ -22,18 +26,39 @@ status:
 
 clean:
 	@echo "Cleaning up entire homelab..."
-	make -C system clean || true
 	make -C metal clean
+
+setup-repos:
+	@echo "Setting up Git repositories..."
+	./scripts/setup-git-repos.sh push
+
+switch-to-gitea:
+	@echo "Switching ArgoCD to use Gitea repository..."
+	@if [[ "$$(./scripts/setup-git-repos.sh check-repo)" == "exists" ]]; then \
+		echo "Gitea repository exists, updating ArgoCD configuration..."; \
+		GIT_REPO_URL="http://gitea-http.gitea.svc.cluster.local:3000/ops/homelab.git"; \
+		export GIT_REPO_URL; \
+		envsubst < bootstrap.yaml.template > bootstrap.yaml; \
+		envsubst < system/applicationset.yaml.template > system/applicationset.yaml; \
+		kubectl apply -f bootstrap.yaml; \
+		kubectl apply -f system/applicationset.yaml; \
+		echo "ArgoCD now using Gitea repository"; \
+	else \
+		echo "Gitea repository not found. Run 'make setup-repos' first."; \
+		exit 1; \
+	fi
 
 help:
 	@echo "Homelab Data Platform Architecture"
 	@echo "=================================="
-	@echo "make metal   - Create k3d cluster"
-	@echo "make system  - Install ArgoCD and deploy all applications"
-	@echo "make status  - Check deployment status"
-	@echo "make clean   - Remove everything"
+	@echo "make metal        - Create k3d cluster"
+	@echo "make system       - Install ArgoCD and deploy all applications"
+	@echo "make setup-repos  - Push code to GitHub and Gitea repositories"
+	@echo "make switch-to-gitea - Switch ArgoCD to use local Gitea"
+	@echo "make status       - Check deployment status"
+	@echo "make clean        - Remove everything"
 	@echo ""
-	@echo "The 'make system' command will automatically deploy:"
-	@echo "  - ArgoCD (GitOps controller)"
-	@echo "  - Platform layer: Gitea (localhost:30300)"
-	@echo "  - Application layer: Nginx (localhost:30081)"
+	@echo "The 'make system' command will automatically:"
+	@echo "  - Use GitHub for initial install (if Gitea not available)"
+	@echo "  - Use Gitea for subsequent installs (if available)"
+	@echo "  - Deploy: ArgoCD, Gitea (localhost:30300), Nginx (localhost:30081)"

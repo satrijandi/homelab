@@ -2,6 +2,7 @@
 
 install:
 	@echo "Installing ArgoCD and setting up GitOps..."
+	@echo "Using Git repository: $${GIT_REPO_URL:-https://github.com/satrijandi/homelab.git}"
 	kubectl create namespace argocd --dry-run=client -o yaml | kubectl apply -f -
 	helm repo add argo https://argoproj.github.io/argo-helm
 	helm repo update
@@ -10,6 +11,9 @@ install:
 	@echo "ArgoCD installed successfully!"
 	@echo "Waiting for ArgoCD to be ready..."
 	kubectl wait --for=condition=available --timeout=300s deployment/argocd-server -n argocd
+	@echo "Generating configuration from templates..."
+	envsubst < ../bootstrap.yaml.template > ../bootstrap.yaml
+	envsubst < applicationset.yaml.template > applicationset.yaml
 	@echo "Applying bootstrap configuration..."
 	kubectl apply -f ../bootstrap.yaml
 	@echo "Deploying ApplicationSet for automatic app discovery..."
@@ -36,10 +40,3 @@ status:
 	@echo ""
 	@echo "ApplicationSets:"
 	kubectl get applicationsets -n argocd
-
-clean:
-	@echo "Removing ArgoCD..."
-	kubectl delete -f ../bootstrap.yaml --ignore-not-found=true
-	helm uninstall argocd -n argocd --ignore-not-found
-	kubectl delete namespace argocd --ignore-not-found=true
-	@echo "ArgoCD removed!"

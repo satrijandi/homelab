@@ -1,0 +1,39 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: homelab-layers
+  namespace: argocd
+spec:
+  generators:
+  - git:
+      repoURL: ${GIT_REPO_URL:-https://github.com/satrijandi/homelab.git}
+      revision: main
+      directories:
+      - path: platform/*
+      - path: applications/*
+  template:
+    metadata:
+      name: '{{path.basename}}'
+    spec:
+      project: default
+      source:
+        repoURL: ${GIT_REPO_URL:-https://github.com/satrijandi/homelab.git}
+        path: '{{path}}'
+        targetRevision: main
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: '{{path.basename}}'
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        retry:
+          limit: 10
+          backoff:
+            duration: 1m
+            factor: 2
+            maxDuration: 16m
+        syncOptions:
+        - CreateNamespace=true
+        - ApplyOutOfSyncOnly=true
+        - ServerSideApply=true
