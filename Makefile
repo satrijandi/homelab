@@ -36,4 +36,4 @@ help:
 	@echo "The 'make system' command will automatically deploy:"
 	@echo "  - ArgoCD (GitOps controller)"
 	@echo "  - Platform layer: Gitea (localhost:30300)"
-	@echo "  - Application layer: Nginx (localhost:30080)"
+	@echo "  - Application layer: Nginx (localhost:30081)"

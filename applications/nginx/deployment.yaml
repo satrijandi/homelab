@@ -40,7 +40,7 @@ spec:
   ports:
   - port: 80
     targetPort: 80
-    nodePort: 30080
+    nodePort: 30081
     protocol: TCP
   selector:
     app: nginx
@@ -80,7 +80,7 @@ data:
                 <h3>🚀 Services</h3>
                 <p><strong>ArgoCD:</strong> <a href="http://localhost:30080" target="_blank">http://localhost:30080</a></p>
                 <p><strong>Gitea:</strong> <a href="http://localhost:30300" target="_blank">http://localhost:30300</a></p>
-                <p><strong>Nginx:</strong> <a href="http://localhost:30080" target="_blank">http://localhost:30080</a></p>
+                <p><strong>Nginx:</strong> <a href="http://localhost:30081" target="_blank">http://localhost:30081</a></p>
             </div>
             
             <div class="section">
