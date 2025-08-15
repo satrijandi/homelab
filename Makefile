@@ -41,7 +41,11 @@ switch-to-gitea:
 		envsubst < system/applicationset.yaml.template > system/applicationset.yaml; \
 		kubectl apply -f bootstrap.yaml; \
 		kubectl apply -f system/applicationset.yaml; \
-		echo "ArgoCD now using Gitea repository"; \
+		echo "Forcing refresh of ApplicationSet to update all applications..."; \
+		kubectl annotate applicationset homelab-layers -n argocd argocd.argoproj.io/refresh=hard --overwrite; \
+		echo "Waiting for applications to sync..."; \
+		sleep 10; \
+		echo "ArgoCD and all applications now using Gitea repository"; \
 	else \
 		echo "Gitea repository not found. Run 'make setup-repos' first."; \
 		exit 1; \
