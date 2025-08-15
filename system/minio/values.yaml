@@ -46,5 +46,9 @@ minio:
     enabled: false
 
   # Console configuration
-  web:
+  console:
     enabled: true
+    service:
+      type: NodePort
+      nodePorts:
+        http: 30091
