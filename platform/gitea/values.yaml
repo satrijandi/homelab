@@ -39,3 +39,6 @@ gitea:
     enabled: true
     persistence:
       size: 1Gi
+  
+  postgresql-ha:
+    enabled: false
