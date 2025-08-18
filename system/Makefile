@@ -1,6 +1,15 @@
 .PHONY: install bootstrap status clean
 
 install:
+	@echo "Installing Cilium CNI..."
+	helm repo add cilium https://helm.cilium.io/
+	helm repo update
+	helm upgrade --install cilium cilium/cilium --version 1.16.5 \
+		--namespace kube-system \
+		--set kubeProxyReplacement=true \
+		--set operator.replicas=1
+	@echo "Waiting for Cilium to be ready..."
+	kubectl wait --for=condition=ready pod -l k8s-app=cilium -n kube-system --timeout=300s
 	@echo "Installing ArgoCD and setting up GitOps..."
 	@echo "Using Git repository: $${GIT_REPO_URL:-https://github.com/satrijandi/homelab.git}"
 	kubectl create namespace argocd --dry-run=client -o yaml | kubectl apply -f -
