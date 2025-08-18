@@ -7,10 +7,10 @@ install:
 	helm repo add argo https://argoproj.github.io/argo-helm
 	helm repo update
 	helm dependency build argocd/
-	helm upgrade --install argocd argocd/ -n argocd --wait
+	helm upgrade --install argocd argocd/ -n argocd
 	@echo "ArgoCD installed successfully!"
 	@echo "Waiting for ArgoCD to be ready..."
-	kubectl wait --for=condition=available --timeout=300s deployment/argocd-server -n argocd
+	kubectl wait --for=condition=available --timeout=600s deployment/argocd-server -n argocd
 	@echo "Generating configuration from templates..."
 	envsubst < ../bootstrap.yaml.template > ../bootstrap.yaml
 	envsubst < applicationset.yaml.template > applicationset.yaml

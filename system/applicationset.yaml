@@ -11,9 +11,6 @@ spec:
       directories:
       - path: platform/*
       - path: applications/*
-      - path: system/*
-      - path: system/argocd
-        exclude: true
   template:
     metadata:
       name: '{{path.basename}}'

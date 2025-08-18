@@ -1,4 +1,13 @@
-.PHONY: metal system platform apps clean help setup-repos switch-to-gitea
+.PHONY: all metal system platform apps clean help setup-repos switch-to-gitea
+
+all:
+	@echo "Running complete homelab setup..."
+	@echo "This will execute: metal -> system -> setup-repos -> switch-to-gitea"
+	make metal
+	make system
+	make setup-repos
+	make switch-to-gitea
+	@echo "Complete homelab setup finished!"
 
 metal:
 	@echo "Setting up k3d cluster..."
@@ -30,10 +39,17 @@ clean:
 
 setup-repos:
 	@echo "Setting up Git repositories..."
+	@echo "Waiting for Gitea pods to be ready..."
+	@kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=gitea -n gitea --timeout=300s || { \
+		echo "Gitea pods are not ready. Please check the deployment status."; \
+		exit 1; \
+	}
+	@echo "Gitea pods are ready, checking repository..."
 	./scripts/setup-git-repos.sh push
 
 switch-to-gitea:
 	@echo "Switching ArgoCD to use Gitea repository..."
+	
 	@if [ "$$(./scripts/setup-git-repos.sh check-repo)" = "exists" ]; then \
 		echo "Gitea repository exists, updating ArgoCD configuration..."; \
 		export GIT_REPO_URL="http://gitea-http.gitea.svc.cluster.local:3000/ops/homelab.git"; \
@@ -54,6 +70,7 @@ switch-to-gitea:
 help:
 	@echo "Homelab Data Platform Architecture"
 	@echo "=================================="
+	@echo "make all          - Complete setup (metal -> system -> setup-repos -> switch-to-gitea)"
 	@echo "make metal        - Create k3d cluster"
 	@echo "make system       - Install ArgoCD and deploy all applications"
 	@echo "make setup-repos  - Push code to GitHub and Gitea repositories"
