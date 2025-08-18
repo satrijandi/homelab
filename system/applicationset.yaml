@@ -9,6 +9,7 @@ spec:
       repoURL: http://gitea-http.gitea.svc.cluster.local:3000/ops/homelab.git
       revision: main
       directories:
+      - path: system/minio
       - path: platform/*
       - path: applications/*
   template:
