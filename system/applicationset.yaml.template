@@ -9,6 +9,7 @@ spec:
       repoURL: ${GIT_REPO_URL}
       revision: main
       directories:
+      - path: system/minio
       - path: platform/*
       - path: applications/*
   template:
