@@ -1,0 +1,9 @@
+apiVersion: v2
+name: zot
+description: Zot OCI registry server for container images
+type: application
+version: 0.1.0
+dependencies:
+  - name: zot
+    version: 0.1.0
+    repository: http://zotregistry.dev/helm-charts

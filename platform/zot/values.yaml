@@ -1,0 +1,44 @@
+zot:
+  image:
+    repository: ghcr.io/project-zot/zot-linux-amd64
+    tag: "v2.1.7"
+    pullPolicy: IfNotPresent
+  
+  replicaCount: 1
+  
+  service:
+    type: NodePort
+    port: 5000
+    nodePort: 30500
+  
+  serviceAccount:
+    create: true
+    annotations: {}
+    name: ""
+  
+  strategy:
+    type: RollingUpdate
+  
+  persistence:
+    enabled: true
+    size: 10Gi
+    storageClass: ""
+    accessModes:
+      - ReadWriteOnce
+  
+  config:
+    storage:
+      rootDirectory: /var/lib/registry
+    http:
+      address: "0.0.0.0"
+      port: "5000"
+    log:
+      level: debug
+  
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
