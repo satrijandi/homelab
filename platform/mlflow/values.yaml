@@ -1,0 +1,100 @@
+# MLflow Configuration with PostgreSQL backend and MinIO artifact storage
+
+mlflow:
+  # MLflow service configuration
+  service:
+    type: NodePort
+    port: 5000
+    nodePort: 30092
+
+  # Backend store configuration with PostgreSQL
+  backendStore:
+    databaseMigration: true
+    postgres:
+      enabled: true
+      host: "mlflow-postgresql"
+      port: 5432
+      database: "mlflow"
+      user: "mlflow"
+      password: "mlflow123"
+
+  # Artifact root configuration with MinIO S3
+  artifactRoot:
+    s3:
+      enabled: true
+      bucket: "mlflow-artifacts"
+      awsAccessKeyId: "admin"
+      awsSecretAccessKey: "homelab123"
+
+  # MinIO S3 endpoint configuration
+  extraEnvVars:
+    MLFLOW_S3_ENDPOINT_URL: "http://minio.minio.svc.cluster.local:9000"
+    AWS_S3_ENDPOINT_URL: "http://minio.minio.svc.cluster.local:9000"
+
+  # Resource configuration
+  resources:
+    limits:
+      memory: 1Gi
+      cpu: 500m
+    requests:
+      memory: 512Mi
+      cpu: 100m
+
+  # Security context for k3d compatibility
+  securityContext:
+    enabled: false
+  podSecurityContext:
+    enabled: false
+
+  # Authentication (disabled for development)
+  auth:
+    enabled: false
+
+  # Logging configuration
+  log:
+    enabled: true
+    level: "info"
+
+  # Replica count
+  replicaCount: 1
+
+# PostgreSQL configuration for MLflow backend
+postgresql:
+  enabled: true
+  auth:
+    username: "mlflow"
+    password: "mlflow123"
+    database: "mlflow"
+    postgresPassword: "postgres123"
+  
+  # Service configuration
+  primary:
+    service:
+      ports:
+        postgresql: 5432
+    
+    # Resource configuration
+    resources:
+      limits:
+        memory: 512Mi
+        cpu: 500m
+      requests:
+        memory: 256Mi
+        cpu: 100m
+    
+    # Persistence
+    persistence:
+      enabled: true
+      size: 5Gi
+      storageClass: "local-path"
+
+  # Security context for k3d compatibility
+  primary:
+    containerSecurityContext:
+      enabled: false
+    podSecurityContext:
+      enabled: false
+
+  # Metrics and monitoring (optional)
+  metrics:
+    enabled: false
