@@ -1,0 +1,75 @@
+kube-prometheus-stack:
+  # Grafana configuration
+  grafana:
+    enabled: true
+    adminPassword: homelab123
+    service:
+      type: NodePort
+      nodePort: 30030
+    persistence:
+      enabled: true
+      size: 2Gi
+    dashboardProviders:
+      dashboardproviders.yaml:
+        apiVersion: 1
+        providers:
+        - name: 'default'
+          orgId: 1
+          folder: ''
+          type: file
+          disableDeletion: false
+          editable: true
+          options:
+            path: /var/lib/grafana/dashboards/default
+    
+  # Prometheus configuration  
+  prometheus:
+    enabled: true
+    service:
+      type: NodePort
+      nodePort: 30090
+    prometheusSpec:
+      retention: 30d
+      storageSpec:
+        volumeClaimTemplate:
+          spec:
+            resources:
+              requests:
+                storage: 5Gi
+      # Enable monitoring of CloudNativePG pods
+      podMonitorSelectorNilUsesHelmValues: false
+      podMonitorSelector: {}
+      ruleSelectorNilUsesHelmValues: false
+      ruleSelector: {}
+      serviceMonitorSelectorNilUsesHelmValues: false
+      serviceMonitorSelector: {}
+      
+  # AlertManager configuration
+  alertmanager:
+    enabled: true
+    service:
+      type: NodePort
+      nodePort: 30093
+    alertmanagerSpec:
+      storage:
+        volumeClaimTemplate:
+          spec:
+            resources:
+              requests:
+                storage: 1Gi
+                
+  # Node Exporter
+  nodeExporter:
+    enabled: true
+    
+  # Kube State Metrics
+  kubeStateMetrics:
+    enabled: true
+    
+  # Prometheus Operator
+  prometheusOperator:
+    enabled: true
+    
+  # Default rules for basic cluster monitoring
+  defaultRules:
+    create: true
