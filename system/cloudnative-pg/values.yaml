@@ -14,9 +14,10 @@ cloudnative-pg:
       cpu: 100m
       memory: 128Mi
 
-  # Enable monitoring if needed
+  # Enable monitoring for Prometheus integration
   monitoring:
-    enabled: false
+    enabled: true
+    enablePodMonitor: true
     
   # Security context
   securityContext:

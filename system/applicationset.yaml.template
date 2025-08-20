@@ -10,6 +10,7 @@ spec:
       revision: main
       directories:
       - path: system/minio
+      - path: system/cloudnative-pg
       - path: platform/*
       - path: applications/*
   template:
