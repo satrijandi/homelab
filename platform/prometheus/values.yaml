@@ -27,7 +27,7 @@ kube-prometheus-stack:
     enabled: true
     service:
       type: NodePort
-      nodePort: 30090
+      nodePort: 30092
     prometheusSpec:
       retention: 30d
       storageSpec:
