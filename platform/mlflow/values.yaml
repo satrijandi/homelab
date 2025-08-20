@@ -39,11 +39,9 @@ mlflow:
       memory: 512Mi
       cpu: 100m
 
-  # Security context for k3d compatibility
-  securityContext:
-    enabled: false
-  podSecurityContext:
-    enabled: false
+  # Security context for k3d compatibility (removed for schema compatibility)
+  # securityContext: {}
+  # podSecurityContext: {}
 
   # Authentication (disabled for development)
   auth:
@@ -87,12 +85,10 @@ postgresql:
       size: 5Gi
       storageClass: "local-path"
 
-  # Security context for k3d compatibility
-  primary:
-    containerSecurityContext:
-      enabled: false
-    podSecurityContext:
-      enabled: false
+  # Security context for k3d compatibility (removed for schema compatibility)
+  # primary:
+  #   containerSecurityContext: {}
+  #   podSecurityContext: {}
 
   # Metrics and monitoring (optional)
   metrics:
