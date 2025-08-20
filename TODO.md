@@ -1,5 +1,6 @@
 # TODO:
 - Add claude commands
+- Showcase cilium
 
 # COMMON COMMANDS:
 k port-forward -n argocd svc/argocd-server 8081:80

@@ -5,7 +5,6 @@ mlflow:
   service:
     type: NodePort
     port: 5000
-    nodePort: 30092
 
   # Backend store configuration with PostgreSQL
   backendStore:

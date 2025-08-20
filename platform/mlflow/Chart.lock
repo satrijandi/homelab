@@ -1,0 +1,9 @@
+dependencies:
+- name: mlflow
+  repository: https://community-charts.github.io/helm-charts
+  version: 1.5.0
+- name: postgresql
+  repository: https://charts.bitnami.com/bitnami
+  version: 16.7.21
+digest: sha256:57bcd8372134595c06330724a7e3779776a863d024cf4c14079a7e98572db366
+generated: "2025-08-20T04:23:41.030646215Z"
