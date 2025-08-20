@@ -6,7 +6,7 @@ metadata:
 spec:
   generators:
   - git:
-      repoURL: http://gitea-http.gitea.svc.cluster.local:3000/ops/homelab.git
+      repoURL: https://github.com/satrijandi/homelab.git
       revision: main
       directories:
       - path: system/minio
@@ -18,7 +18,7 @@ spec:
     spec:
       project: default
       source:
-        repoURL: http://gitea-http.gitea.svc.cluster.local:3000/ops/homelab.git
+        repoURL: https://github.com/satrijandi/homelab.git
         path: '{{path}}'
         targetRevision: main
       destination:

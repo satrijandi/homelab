@@ -1,6 +1,15 @@
 # TODO:
 - Add claude commands
 - Showcase cilium
+1. Setup NewsFetch DB
+2. Setup MLOps DB
+3. Setup Streamzi/CDC from NewsFetch DB to Kafka and from Kafka setup a flink job to do sentiment analysis and put that back into SentimentDB
+4. Setup an Airflow to do daily task fetch data from online to put into a DB.
+5. 
+
+
+
+
 
 # COMMON COMMANDS:
 k port-forward -n argocd svc/argocd-server 8081:80
