@@ -1,7 +1,7 @@
 pgadmin4:
   # PgAdmin authentication
   env:
-    email: admin@homelab.local
+    email: admin@homelab.com
     password: homelab123
   
   # Service configuration for NodePort access
