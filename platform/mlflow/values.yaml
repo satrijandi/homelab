@@ -32,14 +32,14 @@ mlflow:
     type: NodePort
     port: 5000
 
-  # Resource configuration for development environment
+  # Resource configuration for development environment (reduced for k3d)
   resources:
     limits:
-      memory: 1Gi
-      cpu: 500m
-    requests:
       memory: 512Mi
       cpu: 250m
+    requests:
+      memory: 256Mi
+      cpu: 100m
 
   # Replica configuration
   replicaCount: 1
