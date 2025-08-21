@@ -26,12 +26,11 @@ mlflow:
     MLFLOW_S3_ENDPOINT_URL: "http://minio.minio.svc.cluster.local:9000"
     AWS_DEFAULT_REGION: "us-east-1"
 
-  # Service configuration - NodePort for external access
+  # Service configuration - NodePort for external access  
   service:
     enabled: true
     type: NodePort
     port: 5000
-    nodePort: 30500
 
   # Resource configuration for development environment
   resources:
@@ -95,9 +94,6 @@ mlflow:
   mysql:
     enabled: false
 
-  # Network policy
-  networkPolicy:
-    enabled: false
 
   # Ingress configuration (disabled, using NodePort)
   ingress:
