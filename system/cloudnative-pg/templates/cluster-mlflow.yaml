@@ -5,7 +5,7 @@ metadata:
   name: mlflow-cluster
   namespace: {{ .Release.Namespace }}
 spec:
-  instances: 3
+  instances: 1
   
   # PostgreSQL configuration
   postgresql:
