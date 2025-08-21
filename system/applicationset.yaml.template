@@ -12,7 +12,6 @@ spec:
       - path: system/minio
       - path: system/cloudnative-pg
       - path: platform/*
-      - path: applications/*
   template:
     metadata:
       name: '{{path.basename}}'
