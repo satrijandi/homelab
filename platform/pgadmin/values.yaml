@@ -44,6 +44,15 @@ pgadmin4:
         Username: "homelab"
         Password: "homelab123"
         SSLMode: "prefer"
+      mlflow-postgres:
+        Name: "CloudNativePG MLflow"
+        Group: "Homelab"
+        Host: "mlflow-cluster-rw.cloudnative-pg.svc.cluster.local"
+        Port: 5432
+        MaintenanceDB: "mlflowdb"
+        Username: "mlflow"
+        Password: "mlflow456"
+        SSLMode: "prefer"
         
   # Network policy for database access
   networkPolicy:
