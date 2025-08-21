@@ -1,0 +1,9 @@
+apiVersion: v2
+name: mlflow
+description: MLflow platform for machine learning lifecycle management
+type: application
+version: 0.1.0
+dependencies:
+  - name: mlflow
+    version: 1.5.0
+    repository: https://community-charts.github.io/helm-charts
