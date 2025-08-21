@@ -39,7 +39,7 @@ minio:
       enabled: false
 
   # Configuration for development environment
-  defaultBuckets: "homelab-data"
+  defaultBuckets: "homelab-data,mlflow-bucket"
   
   # Network policy
   networkPolicy:
