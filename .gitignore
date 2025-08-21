@@ -1,0 +1,39 @@
+# Kubernetes configuration files (contain sensitive cluster credentials)
+metal/kubeconfig.yaml
+kubeconfig*
+*.kubeconfig
+
+# Helm generated files
+Chart.lock
+charts/*.tgz
+
+# Temporary and log files
+*.log
+*.tmp
+.tmp/
+
+# Environment files (may contain secrets)
+.env
+.env.*
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Backup files
+*.bak
+*.backup
+
+# ArgoCD generated files (if any)
+argocd-*-secret*
+
+# Local development files
+.local/
+.cache/
