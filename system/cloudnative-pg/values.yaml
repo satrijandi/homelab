@@ -1,3 +1,10 @@
+# Database cluster configurations
+clusters:
+  homelab:
+    enabled: true
+  mlflow:
+    enabled: true
+
 cloudnative-pg:
   # CloudNativePG operator configuration
   image:

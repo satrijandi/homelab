@@ -1,8 +1,8 @@
-{{- if .Values.clusters.homelab.enabled }}
+{{- if .Values.clusters.mlflow.enabled }}
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
-  name: cluster-example
+  name: mlflow-cluster
   namespace: {{ .Release.Namespace }}
 spec:
   instances: 3
@@ -26,10 +26,10 @@ spec:
   # Bootstrap configuration
   bootstrap:
     initdb:
-      database: homelab
-      owner: homelab
+      database: mlflowdb
+      owner: mlflow
       secret:
-        name: cluster-example-superuser
+        name: mlflow-cluster-superuser
         
   # Resource limits
   resources:
