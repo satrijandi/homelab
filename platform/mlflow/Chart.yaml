@@ -5,5 +5,5 @@ type: application
 version: 0.1.0
 dependencies:
   - name: mlflow
-    version: 1.5.0
-    repository: https://community-charts.github.io/helm-charts
+    version: 5.1.15
+    repository: oci://registry-1.docker.io/bitnamicharts
