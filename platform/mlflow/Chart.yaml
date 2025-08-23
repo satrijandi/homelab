@@ -1,9 +1,0 @@
-apiVersion: v2
-name: mlflow
-description: MLflow platform for machine learning lifecycle management
-type: application
-version: 0.1.0
-dependencies:
-  - name: mlflow
-    version: 5.1.15
-    repository: oci://registry-1.docker.io/bitnamicharts
