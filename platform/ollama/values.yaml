@@ -1,0 +1,33 @@
+ollama:
+  service:
+    type: NodePort
+    port: 11434
+    nodePort: 30434
+  
+  resources:
+    limits:
+      cpu: 2000m
+      memory: 4Gi
+    requests:
+      cpu: 500m
+      memory: 2Gi
+  
+  persistence:
+    enabled: true
+    size: 10Gi
+    storageClass: local-path
+  
+  env:
+    - name: OLLAMA_HOST
+      value: "0.0.0.0:11434"
+    - name: OLLAMA_ORIGINS
+      value: "*"
+  
+  # Pre-pull some common models (optional)
+  # models:
+  #   - llama3.2:1b
+  #   - phi3.5:latest
+  
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}

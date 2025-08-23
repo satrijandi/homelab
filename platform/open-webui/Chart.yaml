@@ -1,0 +1,9 @@
+apiVersion: v2
+name: open-webui
+description: Open WebUI - ChatGPT-Style Web Interface for LLMs
+type: application
+version: 0.1.0
+dependencies:
+  - name: open-webui
+    version: 7.3.0
+    repository: https://helm.openwebui.com/

@@ -1,0 +1,36 @@
+open-webui:
+  service:
+    type: NodePort
+    port: 8080
+    nodePort: 30082
+
+  env:
+    - name: OLLAMA_BASE_URL
+      value: "http://ollama.ollama:11434"
+    - name: WEBUI_AUTH
+      value: "False"
+    - name: WEBUI_NAME
+      value: "Homelab WebUI"
+    - name: WEBUI_URL
+      value: "http://localhost:30082"
+    - name: ENABLE_SIGNUP
+      value: "True"
+    - name: DEFAULT_USER_ROLE
+      value: "user"
+  
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 2Gi
+    requests:
+      cpu: 200m
+      memory: 512Mi
+  
+  persistence:
+    enabled: true
+    size: 2Gi
+    storageClass: local-path
+  
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
