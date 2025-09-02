@@ -26,10 +26,6 @@ postgresql:
     max_connections: "200"
     shared_buffers: "256MB"
     effective_cache_size: "1GB"
-    
-  # Monitoring and backup (optional for homelab)
-  monitoring:
-    enabled: false
 
 # Credentials configuration
 credentials:

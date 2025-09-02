@@ -32,10 +32,6 @@ spec:
     limits:
       memory: "{{ .Values.postgresql.resources.limits.memory }}" 
       cpu: "{{ .Values.postgresql.resources.limits.cpu }}"
-      
-  # Monitoring and backup (optional for homelab)
-  monitoring:
-    enabled: {{ .Values.postgresql.monitoring.enabled }}
     
 ---
 apiVersion: v1
