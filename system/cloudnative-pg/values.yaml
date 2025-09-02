@@ -1,0 +1,75 @@
+# CloudNative-PG Operator Configuration for Homelab
+cloudnative-pg:
+  # Operator configuration
+  operator:
+    # Resource configuration
+    resources:
+      limits:
+        memory: 512Mi
+        cpu: 500m
+      requests:
+        memory: 256Mi
+        cpu: 100m
+
+  # Image configuration
+  image:
+    pullPolicy: IfNotPresent
+
+  # Security context for k3d compatibility
+  securityContext:
+    runAsNonRoot: false
+    runAsUser: 0
+    runAsGroup: 0
+
+  # Pod security context for k3d compatibility
+  podSecurityContext:
+    runAsNonRoot: false
+    runAsUser: 0
+    runAsGroup: 0
+    fsGroup: 0
+
+  # Service account
+  serviceAccount:
+    create: true
+
+  # RBAC
+  rbac:
+    create: true
+
+  # Webhook configuration
+  webhook:
+    enabled: true
+    port: 9443
+    mutating:
+      create: true
+      failurePolicy: Fail
+    validating:
+      create: true
+      failurePolicy: Fail
+
+  # Metrics and monitoring (optional)
+  monitoring:
+    enabled: false
+    serviceMonitor:
+      enabled: false
+
+  # Configuration for development environment
+  config:
+    # Log level
+    INHERITANCE_WEBHOOK_ENABLED: "true"
+    WEBHOOK_CERT_DIR: "/run/secrets/webhook-certificates"
+
+  # Network policy
+  networkPolicy:
+    enabled: false
+
+  # Affinity and node selection
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+  # Additional configuration for homelab environment
+  replicaCount: 1
+  
+  # Development settings
+  imagePullSecrets: []
