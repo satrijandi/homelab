@@ -12,9 +12,10 @@ This is a GitOps-based homelab demonstrating modern data platform architecture u
 - **ArgoCD**: GitOps controller for automated deployments
 - **MinIO**: S3-compatible object storage for data persistence
 
-### Platform Layer
+### Platform Layer  
+- **PostgreSQL**: Shared database cluster using CloudNative-PG
 - **Gitea**: Self-hosted Git repository management
-- **PostgreSQL**: Database backend for Gitea
+- **MLflow**: Machine learning experiment tracking platform
 
 ### Application Layer
 - **Nginx**: Web server with custom landing page
@@ -54,6 +55,7 @@ homelab/
 ## Service Access Points
 - **ArgoCD**: http://localhost:30080 (admin/get-password-from-secret)
 - **Gitea**: http://localhost:30300 (admin/homelab123)
+- **MLflow**: http://localhost:30500 (experiment tracking and model registry)
 - **Nginx**: http://localhost:30081
 - **MinIO Console**: http://localhost:30091 (admin/homelab123)
 - **MinIO API**: http://localhost:30090

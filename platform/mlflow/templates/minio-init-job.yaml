@@ -1,0 +1,59 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: mlflow-minio-init
+  namespace: mlflow
+  annotations:
+    "helm.sh/hook": pre-install
+    "helm.sh/hook-weight": "-5"
+    "helm.sh/hook-delete-policy": hook-succeeded
+spec:
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+      - name: minio-init
+        image: minio/mc:latest
+        env:
+        - name: MINIO_ENDPOINT
+          value: "{{ .Values.mlflow.minio.host }}:{{ .Values.mlflow.minio.port }}"
+        - name: MINIO_ACCESS_KEY
+          value: "{{ .Values.mlflow.minio.accessKey }}"
+        - name: MINIO_SECRET_KEY
+          value: "{{ .Values.mlflow.minio.secretKey }}"
+        - name: BUCKET_NAME
+          value: "{{ .Values.mlflow.minio.bucket }}"
+        command:
+        - /bin/sh
+        - -c
+        - |
+          echo "Configuring MinIO client..."
+          mc alias set myminio http://$MINIO_ENDPOINT $MINIO_ACCESS_KEY $MINIO_SECRET_KEY
+          
+          echo "Creating bucket: $BUCKET_NAME"
+          mc mb myminio/$BUCKET_NAME || echo "Bucket $BUCKET_NAME already exists"
+          
+          echo "Setting bucket policy for MLflow access..."
+          cat > /tmp/policy.json << EOF
+          {
+            "Version": "2012-10-17",
+            "Statement": [
+              {
+                "Effect": "Allow",
+                "Principal": {"AWS": ["*"]},
+                "Action": ["s3:GetObject", "s3:PutObject", "s3:DeleteObject"],
+                "Resource": ["arn:aws:s3:::$BUCKET_NAME/*"]
+              },
+              {
+                "Effect": "Allow",
+                "Principal": {"AWS": ["*"]},
+                "Action": ["s3:ListBucket"],
+                "Resource": ["arn:aws:s3:::$BUCKET_NAME"]
+              }
+            ]
+          }
+          EOF
+          
+          mc anonymous set-json /tmp/policy.json myminio/$BUCKET_NAME || echo "Policy already set"
+          
+          echo "MinIO bucket setup completed successfully"

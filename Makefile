@@ -80,6 +80,7 @@ help:
 	@echo "make clean        - Remove everything"
 	@echo ""
 	@echo "The 'make system' command will automatically:"
+	@echo "  - Install CloudNative-PG and create PostgreSQL cluster"
 	@echo "  - Use GitHub for initial install (if Gitea not available)"
 	@echo "  - Use Gitea for subsequent installs (if available)"
-	@echo "  - Deploy: ArgoCD, Gitea (localhost:30300), Nginx (localhost:30081), MinIO (localhost:30090/30091)"
+	@echo "  - Deploy: ArgoCD, PostgreSQL, Gitea (localhost:30300), MLflow (localhost:30500), Nginx (localhost:30081), MinIO (localhost:30090/30091)"
