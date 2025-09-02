@@ -40,7 +40,7 @@ clean:
 setup-repos:
 	@echo "Setting up Git repositories..."
 	@echo "Waiting for Gitea pods to be ready..."
-	@kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=gitea -n gitea --timeout=300s || { \
+	@kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=gitea -n gitea --timeout=600s || { \
 		echo "Gitea pods are not ready. Please check the deployment status."; \
 		exit 1; \
 	}
