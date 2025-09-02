@@ -1,2 +1,7 @@
 # Helm charts directory with downloaded .tgz files
 **/charts/
+
+# Generated/temporary files
+bootstrap.yaml
+metal/kubeconfig.yaml
+system/applicationset.yaml
