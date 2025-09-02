@@ -28,7 +28,7 @@ install:
 	@echo "Deploying ApplicationSet for automatic app discovery..."
 	kubectl apply -f applicationset.yaml
 	@echo "Waiting for ApplicationSet to discover applications..."
-	sleep 10
+	sleep 50
 	@echo "Syncing discovered applications..."
 	kubectl patch application gitea -n argocd --type='merge' -p='{"operation":{"sync":{"revision":"main"}}}' || echo "Gitea app not ready yet"
 	kubectl patch application nginx -n argocd --type='merge' -p='{"operation":{"sync":{"revision":"main"}}}' || echo "Nginx app not ready yet"

@@ -5,6 +5,7 @@ all:
 	@echo "This will execute: metal -> system -> setup-repos -> switch-to-gitea"
 	make metal
 	make system
+	sleep 100
 	make setup-repos
 	make switch-to-gitea
 	@echo "Complete homelab setup finished!"
