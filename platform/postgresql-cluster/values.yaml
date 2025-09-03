@@ -55,7 +55,7 @@ cluster:
         
   # Monitoring configuration
   monitoring:
-    enabled: true
+    enablePodMonitor: true
     disableDefaultQueries: false
     
   # Service configuration for NodePort access

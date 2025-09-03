@@ -50,8 +50,8 @@ spec:
   postgresGID: {{ .Values.cluster.postgresGID }}
     
   # Monitoring configuration
-  {{- if .Values.cluster.monitoring.enabled }}
+  {{- if .Values.cluster.monitoring.enablePodMonitor }}
   monitoring:
-    enabled: {{ .Values.cluster.monitoring.enabled }}
+    enablePodMonitor: {{ .Values.cluster.monitoring.enablePodMonitor }}
     disableDefaultQueries: {{ .Values.cluster.monitoring.disableDefaultQueries }}
   {{- end }}
