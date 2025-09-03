@@ -4,20 +4,24 @@ A complete GitOps-based homelab setup demonstrating modern data platform archite
 
 ## 🏗️ Architecture Overview
 
-This homelab implements a **3-layer architecture**:
+This homelab implements a **4-layer architecture**:
+
+### Metal Layer
+- **k3d**: Lightweight Kubernetes cluster for development
 
 ### System Layer
 - **ArgoCD**: GitOps controller for automated deployments
 - **MinIO**: S3-compatible object storage for data persistence
-- **k3d**: Lightweight Kubernetes cluster for development
+- **CloudNative-PG**: PostgreSQL operator for database cluster management
 
 ### Platform Layer  
 - **Gitea**: Self-hosted Git repository management
-- **PostgreSQL**: Database backend for Gitea
+- **MLflow**: Machine learning experiment tracking and model registry
+- **Zot**: OCI-compliant registry for container images
 
 ### Application Layer
 - **Nginx**: Web server with custom landing page
-- **Redis (Valkey)**: Caching layer for applications
+- **pgAdmin4**: PostgreSQL database administration interface
 
 ## 🚀 Quick Start
 
@@ -56,6 +60,15 @@ After running `make system`, access your services:
   - Username: `admin`
   - Password: `homelab123`
 
+- **MLflow**: http://localhost:30500
+  - Machine learning experiment tracking and model registry
+  - ⚠️ **PORT CONFLICT**: Zot also configured for port 30500
+
+- **pgAdmin4**: http://localhost:30082
+  - Username: `admin@homelab.com`
+  - Password: `homelab123`
+  - Pre-configured with PostgreSQL connections
+
 - **Nginx**: http://localhost:30081
   - Custom homelab dashboard
 
@@ -65,46 +78,75 @@ After running `make system`, access your services:
   - Username: `admin`
   - Password: `homelab123`
 
+- **Zot Registry**: http://localhost:30500 ⚠️ **CONFLICTED PORT**
+  - OCI-compliant container registry
+  - Currently conflicts with MLflow port
+
 ## 📁 Project Structure
 
 ```
 homelab/
 ├── Makefile                 # Main build automation
 ├── bootstrap.yaml           # ArgoCD bootstrap application
-├── metal/                   # Cluster infrastructure
+├── bootstrap.yaml.template  # Template for GitOps repo switching
+├── metal/                   # Metal layer - Cluster infrastructure
 │   ├── Makefile            # k3d cluster management
 │   └── k3d-dev.yaml        # k3d cluster configuration
-├── system/                  # System layer (ArgoCD)
-│   ├── Makefile            # ArgoCD deployment
+├── system/                  # System layer
+│   ├── argocd/             # ArgoCD GitOps controller
+│   ├── minio/              # S3-compatible object storage
+│   ├── cloudnative-pg/     # PostgreSQL operator
 │   ├── applicationset.yaml # Auto-discovery of applications
-│   └── argocd/             # ArgoCD Helm chart
+│   └── Makefile            # System deployment
 ├── platform/               # Platform layer
-│   └── gitea/              # Gitea Git server
-│       ├── Chart.yaml
-│       └── values.yaml
+│   ├── gitea/              # Self-hosted Git server
+│   ├── mlflow/             # ML experiment tracking
+│   └── zot/                # OCI registry
 └── applications/           # Application layer
-    └── nginx/              # Nginx web server
-        └── deployment.yaml
+    ├── nginx/              # Web server
+    └── pgadmin4/           # PostgreSQL admin interface
 ```
 
-## 🔄 GitOps Workflow
+## 🔄 Advanced GitOps Workflow
 
-The homelab uses **ArgoCD ApplicationSet** for automatic application discovery:
+The homelab implements a **dual-repository GitOps pattern** with automatic repository switching:
 
-1. **Bootstrap**: `bootstrap.yaml` creates the ArgoCD bootstrap application
-2. **ApplicationSet**: Automatically discovers applications in `platform/` and `applications/` directories
-3. **Sync**: ArgoCD continuously monitors Git repository and deploys changes
-4. **Self-Healing**: Applications automatically recover from drift
+### Initial Setup (GitHub-based)
+1. **Bootstrap**: `bootstrap.yaml` creates the ArgoCD bootstrap application using GitHub
+2. **ApplicationSet**: Automatically discovers applications in `system/`, `platform/`, and `applications/` directories
+3. **Auto-deployment**: ArgoCD deploys CloudNative-PG, MinIO, Gitea, MLflow, pgAdmin4, Nginx
 
-### ApplicationSet Pattern
+### Repository Migration (GitHub → Gitea)
+4. **Repository Setup**: `make setup-repos` pushes code to both GitHub and local Gitea
+5. **Repository Switch**: `make switch-to-gitea` updates ArgoCD to use local Gitea repository
+6. **Self-contained**: System becomes fully self-hosted with local Git repository
+
+### ApplicationSet Discovery Pattern
 
 ```yaml
 # system/applicationset.yaml
 generators:
 - git:
+    repoURL: https://github.com/satrijandi/homelab.git  # Initial
+    # Later switches to: http://gitea-http.gitea.svc.cluster.local:3000/ops/homelab.git
     directories:
-    - path: platform/*    # Discovers platform/gitea
-    - path: applications/* # Discovers applications/nginx
+    - path: system/minio           # MinIO object storage
+    - path: system/cloudnative-pg  # PostgreSQL operator
+    - path: platform/gitea         # Git repository
+    - path: applications/*         # All applications (nginx, pgadmin4)
+```
+
+### GitOps Repository Switching
+
+The system supports seamless switching from external GitHub to internal Gitea:
+
+```bash
+# Template-based configuration
+bootstrap.yaml.template → bootstrap.yaml (with correct repo URL)
+system/applicationset.yaml.template → system/applicationset.yaml
+
+# Automatic repository detection and switching
+./scripts/setup-git-repos.sh get-repo-url  # Detects available repo
 ```
 
 ## 🛠️ Development Workflow
@@ -126,11 +168,14 @@ generators:
 
 | Command | Description |
 |---------|-------------|
+| `make all` | Complete setup (metal → system → setup-repos → switch-to-gitea) |
 | `make metal` | Create k3d cluster |
 | `make system` | Deploy ArgoCD and auto-sync all applications |
+| `make setup-repos` | Push code to GitHub and Gitea repositories |
+| `make switch-to-gitea` | Switch ArgoCD to use local Gitea instead of GitHub |
 | `make status` | Check deployment status |
 | `make clean` | Destroy entire cluster |
-| `make help` | Show all available commands |
+| `make help` | Show all available commands and workflow |
 
 ## 🐛 Troubleshooting
 
@@ -141,6 +186,15 @@ generators:
 ```
 Solution: Check port usage and update NodePort values
 kubectl get svc -A | grep <port>
+```
+
+#### Port Conflicts
+**Problem**: MLflow and Zot both configured for NodePort 30500
+```yaml
+# Solution: Update one service to use different port
+# In platform/zot/values.yaml or platform/mlflow/values.yaml
+service:
+  nodePort: 30501  # Change from 30500
 ```
 
 #### PostgreSQL Configuration Conflict (Gitea)
@@ -188,13 +242,14 @@ kubectl get pods -n <namespace>
 
 This homelab demonstrates:
 
-- **GitOps Methodology**: Declarative infrastructure and application management
-- **Layered Architecture**: Separation of concerns across system/platform/application layers
-- **Container Orchestration**: Kubernetes resource management and networking
-- **Infrastructure as Code**: Version-controlled infrastructure definitions
-- **Automated Deployment**: CI/CD pipelines using ArgoCD
-- **Service Discovery**: ApplicationSet pattern for automatic application detection
-- **Configuration Management**: Helm charts and Kubernetes manifests
+- **Advanced GitOps**: Dual-repository pattern with automatic GitHub → Gitea migration
+- **4-Layer Architecture**: Clean separation across Metal/System/Platform/Application layers
+- **Database Operations**: CloudNative-PG operator with pgAdmin4 management interface
+- **ML Platform**: MLflow experiment tracking with MinIO artifact storage
+- **Container Registry**: Self-hosted Zot OCI registry for container images
+- **Infrastructure as Code**: Complete version-controlled infrastructure definitions
+- **Automated Deployment**: Sophisticated ArgoCD ApplicationSet patterns
+- **Self-Hosting**: Transition from external dependencies to fully self-contained system
 
 ## 🔄 Continuous Improvement
 
