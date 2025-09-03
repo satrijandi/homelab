@@ -46,10 +46,8 @@ spec:
       cpu: {{ .Values.cluster.resources.limits.cpu }}
       
   # Security context
-  securityContext:
-    runAsUser: {{ .Values.cluster.securityContext.runAsUser }}
-    runAsGroup: {{ .Values.cluster.securityContext.runAsGroup }}
-    fsGroup: {{ .Values.cluster.securityContext.fsGroup }}
+  postgresUID: {{ .Values.cluster.postgresUID }}
+  postgresGID: {{ .Values.cluster.postgresGID }}
     
   # Monitoring configuration
   {{- if .Values.cluster.monitoring.enabled }}

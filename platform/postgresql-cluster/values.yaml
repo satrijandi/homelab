@@ -63,10 +63,8 @@ cluster:
     type: ClusterIP
     
   # Security context for k3d compatibility  
-  securityContext:
-    runAsUser: 999
-    runAsGroup: 999
-    fsGroup: 999
+  postgresUID: 999
+  postgresGID: 999
     
   # Backup configuration (optional for homelab)
   backup:
