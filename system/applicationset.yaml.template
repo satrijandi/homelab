@@ -11,6 +11,7 @@ spec:
       directories:
       - path: system/minio
       - path: system/cloudnative-pg
+      - path: platform/postgresql-cluster
       - path: platform/gitea
       - path: applications/*
   template:
