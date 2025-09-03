@@ -1,5 +1,0 @@
-apiVersion: v2
-name: mlflow
-description: MLflow tracking server for homelab
-version: 1.0.0
-appVersion: "2.18.0"

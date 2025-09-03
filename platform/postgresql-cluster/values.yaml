@@ -1,0 +1,73 @@
+# PostgreSQL Cluster Configuration for Homelab
+cluster:
+  name: postgresql-cluster
+  namespace: postgresql-cluster
+  
+  # PostgreSQL version
+  postgresql:
+    parameters:
+      max_connections: "200"
+      shared_buffers: "128MB"
+      effective_cache_size: "512MB"
+      maintenance_work_mem: "64MB"
+      checkpoint_completion_target: "0.9"
+      wal_buffers: "4MB"
+      default_statistics_target: "100"
+      random_page_cost: "1.1"
+      effective_io_concurrency: "200"
+      work_mem: "2MB"
+      min_wal_size: "80MB"
+      max_wal_size: "1GB"
+      
+  # Cluster configuration
+  instances: 1
+  primaryUpdateStrategy: unsupervised
+  
+  # PostgreSQL configuration
+  postgresql:
+    image: ghcr.io/cloudnative-pg/postgresql:16
+    
+  # Storage configuration
+  storage:
+    size: 5Gi
+    storageClass: local-path
+    
+  # Resource configuration
+  resources:
+    requests:
+      memory: 512Mi
+      cpu: 250m
+    limits:
+      memory: 1Gi
+      cpu: 500m
+      
+  # Bootstrap configuration
+  bootstrap:
+    initdb:
+      database: mlflow
+      owner: mlflow
+      secret:
+        name: postgresql-cluster-credentials
+      postInitSQL:
+        - "CREATE EXTENSION IF NOT EXISTS pg_stat_statements;"
+        - "CREATE EXTENSION IF NOT EXISTS pg_trgm;"
+        - "GRANT ALL PRIVILEGES ON DATABASE mlflow TO mlflow;"
+        
+  # Monitoring configuration
+  monitoring:
+    enabled: true
+    disableDefaultQueries: false
+    
+  # Service configuration for NodePort access
+  service:
+    type: ClusterIP
+    
+  # Security context for k3d compatibility  
+  securityContext:
+    runAsUser: 999
+    runAsGroup: 999
+    fsGroup: 999
+    
+  # Backup configuration (optional for homelab)
+  backup:
+    enabled: false
