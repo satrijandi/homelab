@@ -12,7 +12,7 @@ spec:
       - path: system/minio
       - path: system/cloudnative-pg
       - path: system/postgresql-cluster
-      - path: platform/*
+      - path: platform/gitea
       - path: applications/*
   template:
     metadata:
