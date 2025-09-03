@@ -1,0 +1,9 @@
+apiVersion: v2
+name: pgadmin4
+description: pgAdmin4 web-based PostgreSQL administration tool
+type: application
+version: 0.1.0
+dependencies:
+  - name: pgadmin4
+    version: 1.49.0
+    repository: https://helm.runix.net
