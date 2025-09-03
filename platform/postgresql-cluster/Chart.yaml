@@ -1,5 +1,0 @@
-apiVersion: v2
-name: postgresql-cluster
-description: CloudNative-PG PostgreSQL cluster for homelab
-type: application
-version: 0.1.0
