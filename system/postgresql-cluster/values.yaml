@@ -7,7 +7,7 @@ cluster:
   # PostgreSQL version and image
   postgresql:
     version: "16"
-    image: "postgres:16"
+    image: "ghcr.io/cloudnative-pg/postgresql:16"
   
   # Cluster size and scaling
   instances: 2  # Primary + 1 replica for HA

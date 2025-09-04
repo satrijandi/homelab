@@ -39,6 +39,10 @@ spec:
   # Image configuration
   imageName: {{ .Values.cluster.postgresql.image }}
   
+  # User and group configuration for k3d compatibility
+  postgresUID: {{ .Values.security.runAsUser }}
+  postgresGID: {{ .Values.security.runAsGroup }}
+  
   # Resource configuration
   resources:
     requests:
@@ -53,11 +57,6 @@ spec:
     size: {{ .Values.cluster.storage.size }}
     storageClass: {{ .Values.cluster.storage.storageClass }}
 
-  # Security context for k3d compatibility
-  securityContext:
-    runAsUser: {{ .Values.security.runAsUser }}
-    runAsGroup: {{ .Values.security.runAsGroup }}
-    fsGroup: {{ .Values.security.fsGroup }}
 
   # Superuser secret (will be auto-generated)
   superuserSecret:
@@ -94,9 +93,11 @@ spec:
         name: {{ .Values.databases.mlflow.user }}-credentials
         key: password
       
-  # Monitoring (disabled for development)
+  # Monitoring configuration
+  {{- if .Values.cluster.monitoring.enabled }}
   monitoring:
-    enabled: {{ .Values.cluster.monitoring.enabled }}
+    enablePodMonitor: false
+  {{- end }}
   
   # Node affinity to distribute across nodes
   affinity:
