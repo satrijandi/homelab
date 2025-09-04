@@ -36,9 +36,21 @@ gitea:
     size: 2Gi
   
   postgresql:
-    enabled: true
-    persistence:
-      size: 1Gi
+    enabled: false
   
   postgresql-ha:
     enabled: false
+
+  # External PostgreSQL database configuration
+  database:
+    builtIn:
+      postgresql:
+        enabled: false
+    external:
+      database: gitea
+      host: postgresql-cluster-rw.postgresql-cluster.svc.cluster.local
+      port: 5432
+      user: gitea
+      password: 
+        secret: gitea-credentials
+        key: password

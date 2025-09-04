@@ -1,0 +1,55 @@
+# PostgreSQL Cluster Configuration for Homelab
+cluster:
+  # Cluster identification
+  name: postgresql-cluster
+  namespace: postgresql-cluster
+  
+  # PostgreSQL version and image
+  postgresql:
+    version: "16"
+    image: "postgres:16"
+  
+  # Cluster size and scaling
+  instances: 2  # Primary + 1 replica for HA
+  
+  # Resource configuration
+  resources:
+    requests:
+      memory: 1Gi
+      cpu: 500m
+    limits:
+      memory: 2Gi
+      cpu: 1000m
+  
+  # Storage configuration
+  storage:
+    size: 10Gi
+    storageClass: local-path  # k3d default storage class
+  
+  # Backup configuration
+  backup:
+    enabled: false  # Disabled for development environment
+  
+  # Monitoring configuration  
+  monitoring:
+    enabled: false  # Disabled for development environment
+
+# Database initialization
+databases:
+  # Gitea database
+  gitea:
+    name: gitea
+    user: gitea
+    # Password will be auto-generated
+  
+  # MLflow database  
+  mlflow:
+    name: mlflow
+    user: mlflow
+    # Password will be auto-generated
+
+# Security configuration for k3d compatibility
+security:
+  runAsUser: 999
+  runAsGroup: 999
+  fsGroup: 999

@@ -1,0 +1,85 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: {{ .Values.cluster.name }}
+  namespace: {{ .Values.cluster.namespace }}
+  labels:
+    app.kubernetes.io/name: {{ .Values.cluster.name }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/part-of: homelab
+spec:
+  instances: {{ .Values.cluster.instances }}
+  
+  # PostgreSQL configuration
+  postgresql:
+    parameters:
+      max_connections: "100"
+      shared_buffers: "256MB"
+      effective_cache_size: "1GB"
+      maintenance_work_mem: "64MB"
+      checkpoint_completion_target: "0.9"
+      wal_buffers: "16MB"
+      default_statistics_target: "100"
+      random_page_cost: "1.1"
+      effective_io_concurrency: "200"
+      work_mem: "4MB"
+      min_wal_size: "1GB"
+      max_wal_size: "4GB"
+      log_statement: "none"
+      log_min_duration_statement: "1000"
+      log_line_prefix: "%m [%p] %q[user=%u,db=%d,app=%a] "
+      log_checkpoints: "on"
+      log_connections: "on"
+      log_disconnections: "on"
+      log_lock_waits: "on"
+      log_temp_files: "0"
+      
+  # Image configuration
+  imageName: {{ .Values.cluster.postgresql.image }}
+  
+  # Resource configuration
+  resources:
+    requests:
+      memory: {{ .Values.cluster.resources.requests.memory }}
+      cpu: {{ .Values.cluster.resources.requests.cpu }}
+    limits:
+      memory: {{ .Values.cluster.resources.limits.memory }}
+      cpu: {{ .Values.cluster.resources.limits.cpu }}
+
+  # Storage configuration
+  storage:
+    size: {{ .Values.cluster.storage.size }}
+    storageClass: {{ .Values.cluster.storage.storageClass }}
+
+  # Security context for k3d compatibility
+  securityContext:
+    runAsUser: {{ .Values.security.runAsUser }}
+    runAsGroup: {{ .Values.security.runAsGroup }}
+    fsGroup: {{ .Values.security.fsGroup }}
+
+  # Superuser secret (will be auto-generated)
+  superuserSecret:
+    name: {{ .Values.cluster.name }}-superuser
+
+  # Bootstrap configuration
+  bootstrap:
+    initdb:
+      database: postgres
+      owner: postgres
+      secret:
+        name: {{ .Values.cluster.name }}-superuser
+      
+  # Monitoring (disabled for development)
+  monitoring:
+    enabled: {{ .Values.cluster.monitoring.enabled }}
+  
+  # Node affinity to distribute across nodes
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: {{ .Values.cluster.name }}
+          topologyKey: kubernetes.io/hostname
