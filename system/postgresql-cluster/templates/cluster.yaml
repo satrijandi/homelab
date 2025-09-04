@@ -83,7 +83,6 @@ spec:
       superuser: false
       passwordSecret:
         name: {{ .Values.databases.gitea.user }}-credentials
-        key: password
     - name: {{ .Values.databases.mlflow.user }}
       ensure: present
       comment: "MLflow database user"
@@ -91,7 +90,6 @@ spec:
       superuser: false
       passwordSecret:
         name: {{ .Values.databases.mlflow.user }}-credentials
-        key: password
       
   # Monitoring configuration
   {{- if .Values.cluster.monitoring.enabled }}
@@ -99,13 +97,7 @@ spec:
     enablePodMonitor: false
   {{- end }}
   
-  # Node affinity to distribute across nodes
+  # Node affinity to distribute across nodes  
   affinity:
-    podAntiAffinity:
-      preferredDuringSchedulingIgnoredDuringExecution:
-      - weight: 100
-        podAffinityTerm:
-          labelSelector:
-            matchLabels:
-              app.kubernetes.io/name: {{ .Values.cluster.name }}
-          topologyKey: kubernetes.io/hostname
+    enablePodAntiAffinity: true
+    topologyKey: kubernetes.io/hostname
