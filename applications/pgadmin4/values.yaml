@@ -37,7 +37,7 @@ pgadmin4:
     enabled: true
     servers:
       homelab-postgres:
-        Name: "Homelab PostgreSQL"
+        Name: "Homelab PostgreSQL Cluster"
         Group: "Servers"
         Host: "postgresql-cluster-rw.postgresql-cluster.svc.cluster.local"
         Port: 5432
@@ -45,15 +45,24 @@ pgadmin4:
         Username: "postgres"
         SSLMode: "prefer"
         Comment: "Main PostgreSQL cluster for homelab"
-      mlflow-postgres:
+      gitea-database:
+        Name: "Gitea Database"
+        Group: "Application Databases"
+        Host: "postgresql-cluster-rw.postgresql-cluster.svc.cluster.local"
+        Port: 5432
+        MaintenanceDB: "gitea"
+        Username: "gitea"
+        SSLMode: "prefer"
+        Comment: "Gitea repository management database"
+      mlflow-database:
         Name: "MLflow Database"
-        Group: "Servers"
+        Group: "Application Databases"
         Host: "postgresql-cluster-rw.postgresql-cluster.svc.cluster.local"
         Port: 5432
         MaintenanceDB: "mlflow"
         Username: "mlflow"
         SSLMode: "prefer"
-        Comment: "MLflow tracking database"
+        Comment: "MLflow ML experiment tracking database"
 
   # Probe configuration - give pgAdmin4 more time to start
   livenessProbe:
