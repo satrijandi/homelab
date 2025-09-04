@@ -70,6 +70,29 @@ spec:
       owner: postgres
       secret:
         name: {{ .Values.cluster.name }}-superuser
+      postInitSQL:
+        - CREATE DATABASE {{ .Values.databases.gitea.name }} OWNER {{ .Values.databases.gitea.user }}
+        - CREATE DATABASE {{ .Values.databases.mlflow.name }} OWNER {{ .Values.databases.mlflow.user }}
+
+  # Declarative role management
+  managed:
+    roles:
+    - name: {{ .Values.databases.gitea.user }}
+      ensure: present
+      comment: "Gitea database user"
+      login: true
+      superuser: false
+      passwordSecret:
+        name: {{ .Values.databases.gitea.user }}-credentials
+        key: password
+    - name: {{ .Values.databases.mlflow.user }}
+      ensure: present
+      comment: "MLflow database user"
+      login: true
+      superuser: false
+      passwordSecret:
+        name: {{ .Values.databases.mlflow.user }}-credentials
+        key: password
       
   # Monitoring (disabled for development)
   monitoring:

@@ -1,23 +1,4 @@
-# Database and User creation for Gitea
----
-apiVersion: postgresql.cnpg.io/v1
-kind: Database
-metadata:
-  name: {{ .Values.databases.gitea.name }}
-  namespace: {{ .Values.cluster.namespace }}
-  labels:
-    app.kubernetes.io/name: {{ .Values.cluster.name }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernetes.io/part-of: homelab
-    app.kubernetes.io/component: database
-  annotations:
-    argocd.argoproj.io/sync-wave: "2"
-spec:
-  name: {{ .Values.databases.gitea.name }}
-  owner: {{ .Values.databases.gitea.user }}
-  cluster:
-    name: {{ .Values.cluster.name }}
-
+# Credential secrets for database users
 ---
 apiVersion: v1
 kind: Secret
@@ -31,51 +12,10 @@ metadata:
     app.kubernetes.io/component: credentials
   annotations:
     argocd.argoproj.io/sync-wave: "0"
-type: Opaque
-stringData:
-  username: {{ .Values.databases.gitea.user }}
-  password: {{ randAlphaNum 32 | b64enc | quote }}
-
----
-apiVersion: postgresql.cnpg.io/v1
-kind: User
-metadata:
-  name: {{ .Values.databases.gitea.user }}
-  namespace: {{ .Values.cluster.namespace }}
-  labels:
-    app.kubernetes.io/name: {{ .Values.cluster.name }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernetes.io/part-of: homelab
-    app.kubernetes.io/component: user
-  annotations:
-    argocd.argoproj.io/sync-wave: "3"
-spec:
-  name: {{ .Values.databases.gitea.user }}
-  cluster:
-    name: {{ .Values.cluster.name }}
-  passwordSecret:
-    name: {{ .Values.databases.gitea.user }}-credentials
-    key: password
-
-# Database and User creation for MLflow
----
-apiVersion: postgresql.cnpg.io/v1
-kind: Database
-metadata:
-  name: {{ .Values.databases.mlflow.name }}
-  namespace: {{ .Values.cluster.namespace }}
-  labels:
-    app.kubernetes.io/name: {{ .Values.cluster.name }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernetes.io/part-of: homelab
-    app.kubernetes.io/component: database
-  annotations:
-    argocd.argoproj.io/sync-wave: "2"
-spec:
-  name: {{ .Values.databases.mlflow.name }}
-  owner: {{ .Values.databases.mlflow.user }}
-  cluster:
-    name: {{ .Values.cluster.name }}
+type: kubernetes.io/basic-auth
+data:
+  username: {{ .Values.databases.gitea.user | b64enc }}
+  password: {{ randAlphaNum 32 | b64enc }}
 
 ---
 apiVersion: v1
@@ -90,28 +30,7 @@ metadata:
     app.kubernetes.io/component: credentials
   annotations:
     argocd.argoproj.io/sync-wave: "0"
-type: Opaque
-stringData:
-  username: {{ .Values.databases.mlflow.user }}
-  password: {{ randAlphaNum 32 | b64enc | quote }}
-
----
-apiVersion: postgresql.cnpg.io/v1
-kind: User
-metadata:
-  name: {{ .Values.databases.mlflow.user }}
-  namespace: {{ .Values.cluster.namespace }}
-  labels:
-    app.kubernetes.io/name: {{ .Values.cluster.name }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernetes.io/part-of: homelab
-    app.kubernetes.io/component: user
-  annotations:
-    argocd.argoproj.io/sync-wave: "3"
-spec:
-  name: {{ .Values.databases.mlflow.user }}
-  cluster:
-    name: {{ .Values.cluster.name }}
-  passwordSecret:
-    name: {{ .Values.databases.mlflow.user }}-credentials
-    key: password
+type: kubernetes.io/basic-auth
+data:
+  username: {{ .Values.databases.mlflow.user | b64enc }}
+  password: {{ randAlphaNum 32 | b64enc }}
