@@ -40,7 +40,7 @@ databases:
   gitea:
     name: gitea
     user: gitea
-    # Password will be auto-generated
+    password: tFkzLou6ze8yHzmZKRxf0BjzEUyZOdN9  # Hardcoded password for development
   
   # MLflow database  
   mlflow:

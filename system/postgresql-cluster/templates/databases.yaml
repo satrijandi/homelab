@@ -15,7 +15,7 @@ metadata:
 type: kubernetes.io/basic-auth
 data:
   username: {{ .Values.databases.gitea.user | b64enc }}
-  password: {{ randAlphaNum 32 | b64enc }}
+  password: {{ .Values.databases.gitea.password | b64enc }}
 
 ---
 apiVersion: v1
