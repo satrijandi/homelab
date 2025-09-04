@@ -68,8 +68,11 @@ spec:
       secret:
         name: {{ .Values.cluster.name }}-superuser
       postInitSQL:
-        - CREATE DATABASE {{ .Values.databases.gitea.name }} OWNER {{ .Values.databases.gitea.user }}
-        - CREATE DATABASE {{ .Values.databases.mlflow.name }} OWNER {{ .Values.databases.mlflow.user }}
+        - CREATE DATABASE {{ .Values.databases.gitea.name }}
+        - CREATE DATABASE {{ .Values.databases.mlflow.name }}
+      postInitApplicationSQL:
+        - ALTER DATABASE {{ .Values.databases.gitea.name }} OWNER TO {{ .Values.databases.gitea.user }}
+        - ALTER DATABASE {{ .Values.databases.mlflow.name }} OWNER TO {{ .Values.databases.mlflow.user }}
 
   # Declarative role management
   managed:
