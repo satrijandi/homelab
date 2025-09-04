@@ -9,7 +9,7 @@ gitea:
     admin:
       username: admin
       password: homelab123
-      email: admin@homelab.local
+      email: admin@homelab.com
     
     config:
       server:
