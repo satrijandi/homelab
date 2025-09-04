@@ -17,9 +17,7 @@ gitea:
         HOST: postgresql-cluster-rw.postgresql-cluster.svc.cluster.local:5432
         NAME: gitea
         USER: gitea
-        PASSWD:
-          secret: gitea-credentials
-          key: password
+        PASSWD: tFkzLou6ze8yHzmZKRxf0BjzEUyZOdN9
       
       server:
         LANDING_PAGE: explore
