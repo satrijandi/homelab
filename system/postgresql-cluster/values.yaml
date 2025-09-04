@@ -48,8 +48,5 @@ databases:
     user: mlflow
     # Password will be auto-generated
 
-# Security configuration for k3d compatibility
-security:
-  runAsUser: 999
-  runAsGroup: 999
-  fsGroup: 999
+# Security configuration removed for CloudNative-PG compatibility
+# CloudNative-PG manages user/group configuration automatically

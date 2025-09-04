@@ -39,9 +39,7 @@ spec:
   # Image configuration
   imageName: {{ .Values.cluster.postgresql.image }}
   
-  # User and group configuration for k3d compatibility
-  postgresUID: {{ .Values.security.runAsUser }}
-  postgresGID: {{ .Values.security.runAsGroup }}
+  # User and group configuration removed for CloudNative-PG compatibility
   
   # Resource configuration
   resources:
