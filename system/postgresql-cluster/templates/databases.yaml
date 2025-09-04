@@ -10,6 +10,8 @@ metadata:
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/part-of: homelab
     app.kubernetes.io/component: database
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
 spec:
   name: {{ .Values.databases.gitea.name }}
   owner: {{ .Values.databases.gitea.user }}
@@ -27,6 +29,8 @@ metadata:
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/part-of: homelab
     app.kubernetes.io/component: credentials
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
 type: Opaque
 stringData:
   username: {{ .Values.databases.gitea.user }}
@@ -43,6 +47,8 @@ metadata:
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/part-of: homelab
     app.kubernetes.io/component: user
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
 spec:
   name: {{ .Values.databases.gitea.user }}
   cluster:
@@ -63,6 +69,8 @@ metadata:
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/part-of: homelab
     app.kubernetes.io/component: database
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
 spec:
   name: {{ .Values.databases.mlflow.name }}
   owner: {{ .Values.databases.mlflow.user }}
@@ -80,6 +88,8 @@ metadata:
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/part-of: homelab
     app.kubernetes.io/component: credentials
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
 type: Opaque
 stringData:
   username: {{ .Values.databases.mlflow.user }}
@@ -96,6 +106,8 @@ metadata:
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/part-of: homelab
     app.kubernetes.io/component: user
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
 spec:
   name: {{ .Values.databases.mlflow.user }}
   cluster:
